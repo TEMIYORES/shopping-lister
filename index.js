@@ -34,7 +34,6 @@ const addItem = (e) => {
     items.push(input.value);
     localStorage.setItem("items", JSON.stringify(items));
   } else {
-    console.log(JSON.stringify([input.value]));
     localStorage.setItem("items", JSON.stringify([input.value]));
   }
   input.value = "";
@@ -54,7 +53,6 @@ itemContainer.addEventListener("click", (e) => {
     const newItems = items.filter(
       (item) => item !== e.target.previousSibling.textContent
     );
-    console.log(newItems);
     localStorage.setItem("items", JSON.stringify(newItems));
 
     e.target.parentNode.remove();
@@ -89,7 +87,6 @@ filter.addEventListener("input", (e) => {
   } else {
     itemContainer.replaceChildren();
   }
-  console.log("hello");
   filteredItems.forEach((shopItem) => {
     const item = document.createElement("li");
     const itemTextContainer = document.createElement("span");
@@ -109,6 +106,10 @@ filter.addEventListener("input", (e) => {
 });
 
 function loadItems() {
+  if (localStorage.getItem("items") === "") {
+    noItemsText();
+    return;
+  }
   if (JSON.parse(localStorage.getItem("items")).length > 0) {
     const items = JSON.parse(localStorage.getItem("items"));
     items.forEach((shopItem) => {

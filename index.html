@@ -34,7 +34,10 @@
         class="filterInput w-full py-2 px-5 mb-5 outline-none bg-[#f5f5f5] border border-r-0 border-t-0 border-l-0"
         placeholder="Filter Items..."
       />
-      <h3 class="text-2xl font-bold mb-5">Items</h3>
+      <div class="flex items-center mb-5">
+        <h3 class="text-2xl font-bold">Items</h3>
+        <small class="text-[#413c3c] ml-2">(click each items to edit)</small>
+      </div>
       <ul class="flex flex-wrap gap-2 mb-5"></ul>
       <button
         class="w-full py-2 px-5 bg-[#f5f5f5] border rounded-md mb-5 cursor-pointer clearBtn"
@@ -45,4 +48,4 @@
     <script src="./index.js" defer></script>
   </body>
 </html>
-z
+npx tailwindcss -i ./index.css -o ./dist/output.css --watch
