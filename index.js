@@ -13,7 +13,9 @@ const addItem = (e) => {
     return;
   }
   const item = document.createElement("li");
-  const itemTextContainer = document.createElement("span");
+  const itemTextContainer = document.createElement("p");
+  itemTextContainer.title = "tap to edit";
+
   const itemText = document.createTextNode(`${input.value}`);
   item.className =
     "w-[48%] bg-white px-2 py-2 rounded-md flex items-center justify-between";
@@ -39,6 +41,8 @@ const addItem = (e) => {
   input.value = "";
 };
 inputForm.addEventListener("submit", addItem);
+
+// text displayed when there's no items
 function noItemsText() {
   if (itemContainer.children.length === 0) {
     const text = document.createElement("small");
@@ -47,7 +51,7 @@ function noItemsText() {
     itemContainer.appendChild(text);
   }
 }
-itemContainer.addEventListener("click", (e) => {
+function deleteItem(e) {
   if (e.target.tagName === "SPAN") {
     const items = JSON.parse(localStorage.getItem("items"));
     const newItems = items.filter(
@@ -58,38 +62,48 @@ itemContainer.addEventListener("click", (e) => {
     e.target.parentNode.remove();
   }
   noItemsText();
-});
+}
+function editItem(e) {
+  if (e.target.tagName === "P") {
+    input.value = e.target.textContent;
+    const items = JSON.parse(localStorage.getItem("items"));
+    const newItems = items.filter((item) => item !== e.target.textContent);
+    console.log(newItems);
+  }
+}
+itemContainer.addEventListener("click", deleteItem);
+itemContainer.addEventListener("click", editItem);
 
-clearbtn.addEventListener("click", () => {
+function clearItem() {
   itemContainer.replaceChildren();
   localStorage.setItem("items", "");
   noItemsText();
-});
+}
+clearbtn.addEventListener("click", clearItem);
 
 filter.addEventListener("input", (e) => {
   let filteredItems;
   if (e.target.value.trim() == "") {
     alert("Enter a valid filter");
-    filteredItems = JSON.parse(localStorage.getItem("items"));
+    return;
   } else {
     noItemsText();
     const filteredNodes = JSON.parse(localStorage.getItem("items"));
     filteredItems = filteredNodes.filter((item) =>
       item.includes(e.target.value)
     );
-    if (filteredItems.length === 0) {
-      filteredItems = JSON.parse(localStorage.getItem("items"));
-    }
   }
   if (filteredItems.length === 0) {
+    console.log(filteredItems);
     alert("nothing to filter");
     return;
   } else {
     itemContainer.replaceChildren();
   }
+  console.log(filteredItems);
   filteredItems.forEach((shopItem) => {
     const item = document.createElement("li");
-    const itemTextContainer = document.createElement("span");
+    const itemTextContainer = document.createElement("p");
     const itemText = document.createTextNode(`${shopItem}`);
     item.className =
       "w-[48%] bg-white px-2 py-2 rounded-md flex items-center justify-between";
@@ -114,7 +128,7 @@ function loadItems() {
     const items = JSON.parse(localStorage.getItem("items"));
     items.forEach((shopItem) => {
       const item = document.createElement("li");
-      const itemTextContainer = document.createElement("span");
+      const itemTextContainer = document.createElement("p");
       const itemText = document.createTextNode(`${shopItem}`);
       item.className =
         "w-[48%] bg-white px-2 py-2 rounded-md flex items-center justify-between";
