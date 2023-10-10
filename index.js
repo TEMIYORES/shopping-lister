@@ -18,7 +18,7 @@ const addItem = (e) => {
 
   const itemText = document.createTextNode(`${input.value}`);
   item.className =
-    "w-[48%] bg-white px-2 py-2 rounded-md flex items-center justify-between";
+    "max-sm:w-full w-[48%] bg-white px-2 py-2 rounded-md flex items-center justify-between";
   const icon = document.createElement("span");
   icon.className = "material-icons text-red-700 cursor-pointer close";
   icon.style.fontSize = "1.5rem";
