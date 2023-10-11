@@ -51,40 +51,37 @@ function noItemsText() {
     itemContainer.appendChild(text);
   }
 }
+
 function deleteItem(e) {
   if (e.target.tagName === "SPAN") {
-    const items = JSON.parse(localStorage.getItem("items"));
-    const newItems = items.filter(
-      (item) => item !== e.target.previousSibling.textContent
-    );
-    localStorage.setItem("items", JSON.stringify(newItems));
+    if (confirm("Are you sure? ")) {
+      const items = JSON.parse(localStorage.getItem("items"));
+      const newItems = items.filter(
+        (item) => item !== e.target.previousSibling.textContent
+      );
+      localStorage.setItem("items", JSON.stringify(newItems));
 
-    e.target.parentNode.remove();
+      e.target.parentNode.remove();
+    }
   }
   noItemsText();
 }
-function editItem(e) {
-  if (e.target.tagName === "P") {
-    input.value = e.target.textContent;
-    const items = JSON.parse(localStorage.getItem("items"));
-    const newItems = items.filter((item) => item !== e.target.textContent);
-    console.log(newItems);
-  }
-}
+
 itemContainer.addEventListener("click", deleteItem);
-itemContainer.addEventListener("click", editItem);
 
 function clearItem() {
-  itemContainer.replaceChildren();
-  localStorage.setItem("items", "");
-  noItemsText();
+  if (confirm("Are you sure? ")) {
+    itemContainer.replaceChildren();
+    localStorage.setItem("items", "");
+    noItemsText();
+  }
 }
 clearbtn.addEventListener("click", clearItem);
 
 filter.addEventListener("input", (e) => {
   let filteredItems;
   if (e.target.value.trim() == "") {
-    alert("Enter a valid filter");
+    e.target.value = "";
     return;
   } else {
     noItemsText();
@@ -100,7 +97,6 @@ filter.addEventListener("input", (e) => {
   } else {
     itemContainer.replaceChildren();
   }
-  console.log(filteredItems);
   filteredItems.forEach((shopItem) => {
     const item = document.createElement("li");
     const itemTextContainer = document.createElement("p");
@@ -147,3 +143,17 @@ function loadItems() {
   }
 }
 window.addEventListener("DOMContentLoaded", loadItems);
+
+function editItem(e) {
+  if (e.target.tagName === "P") {
+    input.value = e.target.textContent;
+    const items = JSON.parse(localStorage.getItem("items"));
+    // let itemIndex = "";
+    // const editItem = items.filter((item, index) => {
+    //   itemIndex = index;
+    //   return item === e.target.textContent;
+    // })[0];
+    // console.log(itemIndex);
+  }
+}
+itemContainer.addEventListener("click", editItem);
