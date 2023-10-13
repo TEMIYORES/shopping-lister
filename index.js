@@ -3,23 +3,25 @@ const inputForm = document.querySelector("form");
 const itemContainer = document.querySelector("ul");
 const clearbtn = document.querySelector("button.clearBtn");
 const filter = document.querySelector("input.filterInput");
-
+const updateBtn = document.getElementById("update");
+const addBtn = document.getElementById("add");
+// check if input is empty
 input.addEventListener("input", (e) => {
   if (input.value.trim() === "") {
     input.value = "";
     return;
   }
 });
-// add item function
+
+// Adds submitted item to the localStorage and the ui
 const addItem = (e) => {
   e.preventDefault();
-
   // Validate Input
   if (input.value.trim() === "") {
     alert("Please add item");
     return;
   }
-  const item = itemAdd(input.value);
+  const item = createItem(input.value);
 
   if (Array.from(itemContainer.children)[0].tagName == "SMALL") {
     itemContainer.replaceChild(item, itemContainer.children[0]);
@@ -37,9 +39,9 @@ const addItem = (e) => {
   }
   input.value = "";
 };
-inputForm.addEventListener("submit", addItem);
 
-function itemAdd(itemtoAdd) {
+// Creates the item to be added
+function createItem(itemtoAdd) {
   const item = document.createElement("li");
   const itemTextContainer = document.createElement("p");
   const itemText = document.createTextNode(`${itemtoAdd}`);
@@ -55,7 +57,8 @@ function itemAdd(itemtoAdd) {
   item.appendChild(icon);
   return item;
 }
-// text displayed when there's no items
+
+// Displays when there is no item to display
 function noItemsText(textItem, filterCount = 1) {
   if (itemContainer.children.length === 0) {
     const text = document.createElement("small");
@@ -81,6 +84,7 @@ function noItemsText(textItem, filterCount = 1) {
   }
 }
 
+// Deletes a particular item
 function deleteItem(e) {
   if (e.target.tagName === "SPAN") {
     if (confirm("Are you sure? ")) {
@@ -96,8 +100,7 @@ function deleteItem(e) {
   noItemsText("No items...");
 }
 
-itemContainer.addEventListener("click", deleteItem);
-
+// Clears the items list
 function clearItem() {
   if (confirm("Are you sure? ")) {
     itemContainer.replaceChildren();
@@ -105,9 +108,9 @@ function clearItem() {
     noItemsText("No items...");
   }
 }
-clearbtn.addEventListener("click", clearItem);
 
-filter.addEventListener("input", (e) => {
+// Filters the items based on the search
+function filterItems(e) {
   let items = document.querySelectorAll("li");
   if (items.length == 0) {
     if (e.inputType == "deleteContentBackward") {
@@ -129,13 +132,14 @@ filter.addEventListener("input", (e) => {
   });
 
   noItemsText("No filtered items...", filterCount);
-});
+}
 
+// Loads data when the page is loaded
 function loadItems() {
   if (localStorage.getItem("items")) {
     const items = JSON.parse(localStorage.getItem("items"));
     items.forEach((shopItem) => {
-      const item = itemAdd(shopItem);
+      const item = createItem(shopItem);
       itemContainer.appendChild(item);
     });
     const textItem = document.createElement("small");
@@ -148,18 +152,50 @@ function loadItems() {
     noItemsText("No items...");
   }
 }
-window.addEventListener("DOMContentLoaded", loadItems);
 
+// Edits item when clicked
+let itemTextContent = {
+  target: "",
+  text: "",
+};
 function editItem(e) {
   if (e.target.tagName === "P") {
     input.value = e.target.textContent;
-    const items = JSON.parse(localStorage.getItem("items"));
-    // let itemIndex = "";
-    // const editItem = items.filter((item, index) => {
-    //   itemIndex = index;
-    //   return item === e.target.textContent;
-    // })[0];
-    // console.log(itemIndex);
+    e.target.classList.add("text-[#ccc]");
+    changeButtonState();
+    itemTextContent.target = e.target;
+    itemTextContent.text = e.target.textContent;
   }
 }
-itemContainer.addEventListener("click", editItem);
+
+function updateItem() {
+  const items = JSON.parse(localStorage.getItem("items"));
+  const index = items.indexOf(itemTextContent.text);
+  items[index] = input.value;
+  itemTextContent.classList.add("text-[#000]");
+  changeButtonState();
+  localStorage.setItem("items", JSON.stringify(items));
+}
+
+// Changes button add state to update state
+function changeButtonState() {
+  if (updateBtn.classList.contains("hidden")) {
+    updateBtn.classList.replace("hidden", "flex");
+    addBtn.classList.replace("flex", "hidden");
+  } else {
+    updateBtn.classList.replace("flex", "hidden");
+    addBtn.classList.replace("hidden", "flex");
+  }
+}
+
+function init() {
+  itemContainer.addEventListener("click", editItem);
+  addBtn.addEventListener("click", addItem);
+  window.addEventListener("DOMContentLoaded", loadItems);
+  clearbtn.addEventListener("click", clearItem);
+  itemContainer.addEventListener("click", deleteItem);
+  filter.addEventListener("input", filterItems);
+  updateBtn.addEventListener("click", updateItem);
+}
+
+init();
